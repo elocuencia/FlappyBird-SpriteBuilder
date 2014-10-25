@@ -192,6 +192,40 @@
         }
     }
     
+    
+    
+    NSMutableArray *offScreenObstacles = nil;
+    
+    for (CCNode *obstacle in _obstacles) {
+        CGPoint obstacleWorldPosition = [physicsNode convertToWorldSpace:obstacle.position];
+        CGPoint obstacleScreenPosition = [self convertToNodeSpace:obstacleWorldPosition];
+        if (obstacleScreenPosition.x < -obstacle.contentSize.width) {
+            if (!offScreenObstacles) {
+                offScreenObstacles = [NSMutableArray array];
+            }
+            [offScreenObstacles addObject:obstacle];
+        }
+    }
+    
+    for (CCNode *obstacleToRemove in offScreenObstacles) {
+        [obstacleToRemove removeFromParent];
+        [_obstacles removeObject:obstacleToRemove];
+    }
+    
+    if (!_gameOver)
+    {
+        @try
+        {
+            character.physicsBody.velocity = ccp(80.f, clampf(character.physicsBody.velocity.y, -MAXFLOAT, 200.f));
+            
+            [super update:delta];
+        }
+        @catch(NSException* ex)
+        {
+            
+        }
+    }
+    
     _parallaxBackground.position = ccp(_parallaxBackground.position.x - (character.physicsBody.velocity.x * delta), _parallaxBackground.position.y);
     
     // loop the bushes
@@ -229,40 +263,6 @@
             }
         }
     
-    NSMutableArray *offScreenObstacles = nil;
-    
-    for (CCNode *obstacle in _obstacles) {
-        CGPoint obstacleWorldPosition = [physicsNode convertToWorldSpace:obstacle.position];
-        CGPoint obstacleScreenPosition = [self convertToNodeSpace:obstacleWorldPosition];
-        if (obstacleScreenPosition.x < -obstacle.contentSize.width) {
-            if (!offScreenObstacles) {
-                offScreenObstacles = [NSMutableArray array];
-            }
-            [offScreenObstacles addObject:obstacle];
-        }
-    }
-    
-    for (CCNode *obstacleToRemove in offScreenObstacles) {
-        [obstacleToRemove removeFromParent];
-        [_obstacles removeObject:obstacleToRemove];
-    }
-    
-    if (!_gameOver)
-    {
-        @try
-        {
-            character.physicsBody.velocity = ccp(80.f, clampf(character.physicsBody.velocity.y, -MAXFLOAT, 200.f));
-            
-            [super update:delta];
-        }
-        @catch(NSException* ex)
-        {
-            
-        }
-    }
-    
-    
-    
 }
 
 -(BOOL)ccPhysicsCollisionBegin:(CCPhysicsCollisionPair*)pair character:(CCSprite*)character level:(CCNode*)level {
@@ -276,5 +276,5 @@
     _scoreLabel.string = [NSString stringWithFormat:@"%d", points];
     return TRUE;
 }
-
+}
 @end

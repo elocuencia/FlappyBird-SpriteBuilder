@@ -264,6 +264,7 @@
         }
     
 }
+}
 
 -(BOOL)ccPhysicsCollisionBegin:(CCPhysicsCollisionPair*)pair character:(CCSprite*)character level:(CCNode*)level {
     [self gameOver];
@@ -276,5 +277,5 @@
     _scoreLabel.string = [NSString stringWithFormat:@"%d", points];
     return TRUE;
 }
-}
+
 @end
